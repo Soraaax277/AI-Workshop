@@ -14,6 +14,7 @@ public class DialogueManager : MonoBehaviour
     public static DialogueManager Instance { get; private set; }
 
     [SerializeField] DialogueUI dialogueUI;
+    [SerializeField] DialogueSpeechController speechController;
     [SerializeField] InputActionAsset inputActions;
 
     InputAction submitAction;
@@ -58,8 +59,18 @@ public class DialogueManager : MonoBehaviour
 
         dialogueUI.Hide();
         dialogueUI.OnChoiceSelected += HandleChoiceSelected;
+        EnsureSpeechController();
         TryAssignInputActions();
         BindInputActions();
+    }
+
+    void EnsureSpeechController()
+    {
+        if (speechController == null)
+            speechController = GetComponent<DialogueSpeechController>();
+
+        if (speechController == null)
+            speechController = gameObject.AddComponent<DialogueSpeechController>();
     }
 
     void TryAssignInputActions()
@@ -128,6 +139,7 @@ public class DialogueManager : MonoBehaviour
         if (WasAdvancePressed())
         {
             canAcceptAdvance = false;
+            StopSpeech();
             Advance();
         }
     }
@@ -202,12 +214,13 @@ public class DialogueManager : MonoBehaviour
 
             mode = DialogueMode.WaitingForChoice;
             choiceLocked = false;
+            StopSpeech();
             dialogueUI.ShowChoices(activeSpeakerName, node.choices);
             return;
         }
 
         mode = DialogueMode.NpcLine;
-        dialogueUI.ShowNpcLine(activeSpeakerName, node.text);
+        PresentNpcLine(node.text);
         canAcceptAdvance = true;
     }
 
@@ -222,6 +235,7 @@ public class DialogueManager : MonoBehaviour
 
         choiceLocked = true;
         dialogueUI.LockChoices();
+        StopSpeech();
 
         DialogueChoice choice = node.choices[choiceIndex];
         activeResponseLines = choice.npcResponses;
@@ -263,10 +277,27 @@ public class DialogueManager : MonoBehaviour
                 return;
             }
 
-            dialogueUI.ShowNpcLine(activeSpeakerName, activeResponseLines[responseLineIndex]);
+            PresentNpcLine(activeResponseLines[responseLineIndex]);
             responseLineIndex++;
             canAcceptAdvance = true;
         }
+    }
+
+    void PresentNpcLine(string line)
+    {
+        dialogueUI.ShowNpcLine(activeSpeakerName, line);
+        PresentNpcSpeech(line);
+    }
+
+    void PresentNpcSpeech(string line)
+    {
+        EnsureSpeechController();
+        speechController?.Speak(line);
+    }
+
+    void StopSpeech()
+    {
+        speechController?.Stop();
     }
 
     public void EndDialogue()
@@ -279,6 +310,7 @@ public class DialogueManager : MonoBehaviour
         choiceLocked = false;
         activeStage = null;
         activeResponseLines = null;
+        StopSpeech();
         dialogueUI.Hide();
         ConsumeAdvanceInputs();
         SetPlayerControl(true);

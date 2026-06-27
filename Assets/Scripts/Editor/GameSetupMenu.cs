@@ -373,6 +373,7 @@ public static class GameSetupMenu
         {
             var manager = new GameObject("DialogueManager");
             var dialogueManager = manager.AddComponent<DialogueManager>();
+            manager.AddComponent<DialogueSpeechController>();
             var inputAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.InputSystem.InputActionAsset>(InputActionsPath);
             SetPrivateField(dialogueManager, "inputActions", inputAsset);
         }

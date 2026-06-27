@@ -29,6 +29,7 @@ public static class GameRuntimeSetup
         {
             var managerObject = new GameObject("DialogueManager");
             var manager = managerObject.AddComponent<DialogueManager>();
+            managerObject.AddComponent<DialogueSpeechController>();
 
             InputActionAsset inputActions = null;
             var assets = Resources.FindObjectsOfTypeAll<InputActionAsset>();
