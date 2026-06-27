@@ -1,0 +1,243 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: ElderMaraDialogue
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueAsset
+  npcDisplayName: Elder Mara
+  stages:
+  - stageName: First Meeting
+    stageDescription: The player discovers Elder Mara at the edge of the ruins.
+    nodes:
+    - nodeType: 0
+      text: Traveler...? Is someone truly out there? I haven't heard footsteps that
+        weren't wrong in weeks.
+      choices: []
+    - nodeType: 0
+      text: Forgive an old woman for staring. These ruins used to be a trading road.
+        Now the only things that travel it hunt.
+      choices: []
+    - nodeType: 0
+      text: You carry no banner, no escort, and no fear I can see on your face. That
+        either makes you brave or terribly lost.
+      choices: []
+    - nodeType: 1
+      text: 
+      choices:
+      - playerText: I'm looking for a way through the ruins.
+        npcResponses:
+        - Through? There are ways, yes. None of them kind.
+        - The old path dips behind broken stone and rises near the eastern gate.
+        - Stay low when you cross the open stretch. The thing that patrols here sees
+          movement before it hears it.
+      - playerText: Who are you?
+        npcResponses:
+        - Name's Mara. I was a scribe once, before the collapse.
+        - I catalogued routes, names, debts, and safe houses. Now I catalog what
+          still breathes.
+        - You're the first person in a long time who looked me in the eye instead
+          of the horizon.
+      - playerText: Is it safe here?
+        npcResponses:
+        - Safe is a word for places with walls that still mean something.
+        - This spot gives you cover if you're quiet. The wall to the west breaks
+          line of sight.
+        - If it sees you, don't run in a straight line. Break sight, then move.
+    - nodeType: 0
+      text: Listen carefully. The creature follows a route between the old patrol
+        markers. I've watched it long enough to know its habits.
+      choices: []
+    - nodeType: 0
+      text: It returns to where it began if it loses you. Not because it's merciful.
+        Because it's bound to that pattern.
+      choices: []
+    - nodeType: 1
+      text: 
+      choices:
+      - playerText: Can you tell me more about the creature?
+        npcResponses:
+        - Tall as two men, shoulders like a battering ram, and patient in the worst
+          way.
+        - It doesn't rage. It searches. That's worse, in my opinion.
+        - If it corners you, don't waste breath begging. Save it for running.
+      - playerText: Why do you stay here?
+        npcResponses:
+        - Someone has to remember who lived here.
+        - I stay because leaving would mean all these names become nothing but wind.
+        - And because warnings only matter if someone is left to speak them.
+      - playerText: Do you need help with anything?
+        npcResponses:
+        - Help? From a stranger who arrived with dust on their boots?
+        - Mara smiles, tired and genuine.
+        - Survive the night. That would help me more than you know.
+    - nodeType: 0
+      text: 'Take this counsel before you go: if you need to speak with me again,
+        come when the patrol is on the far side of the stones.'
+      choices: []
+    - nodeType: 0
+      text: And if you hear metal scraping on stone, don't investigate. Walk away.
+        Then run when you're out of sight.
+      choices: []
+    - nodeType: 0
+      text: Go carefully, traveler. The ruins remember every mistake.
+      choices: []
+  - stageName: Second Meeting
+    stageDescription: The player returns after surviving their first encounter with
+      the ruins.
+    nodes:
+    - nodeType: 0
+      text: You came back. Good. I half expected the ruins to keep you.
+      choices: []
+    - nodeType: 0
+      text: Your boots are cleaner than they should be if you'd been running all
+        night. That means you listened, or you got lucky.
+      choices: []
+    - nodeType: 1
+      text: 
+      choices:
+      - playerText: I hid behind the wall when it chased me.
+        npcResponses:
+        - Then you learned the most important lesson here.
+        - Breaking line of sight isn't cowardice. It's craft.
+        - The patrol will always return home if it can't find you. Use that.
+      - playerText: I tried to fight it.
+        npcResponses:
+        - Mara's expression hardens.
+        - Don't do that again unless you have steel, friends, and a reason worth
+          dying for.
+        - That thing isn't a beast you scare off. It's a siege that learned to walk.
+      - playerText: I haven't seen it yet.
+        npcResponses:
+        - Don't sound disappointed. You've been spared a lesson most learn too late.
+        - 'When you do see it, remember: distance is safety, cover is survival, noise
+          is invitation.'
+    - nodeType: 0
+      text: Since you've returned, I'll tell you what I tell almost no one.
+      choices: []
+    - nodeType: 0
+      text: There used to be a bell tower beyond the broken arch. From there you
+        can see the whole patrol loop.
+      choices: []
+    - nodeType: 0
+      text: I can't climb it anymore. My knees argue with every stone step. But a
+        younger pair of legs might manage.
+      choices: []
+    - nodeType: 1
+      text: 
+      choices:
+      - playerText: I'll find the bell tower.
+        npcResponses:
+        - If you do, watch before you act.
+        - Count how long it pauses at each marker. Count how long it takes to return.
+        - Knowledge is the only weapon here that doesn't dull.
+      - playerText: Is there another route around the patrol?
+        npcResponses:
+        - There's a narrow cut behind the collapsed chapel.
+        - It smells like wet stone and old iron, but it keeps you out of the open.
+        - Mind your footing. One fall and the noise will do the rest.
+      - playerText: What happened to this place?
+        npcResponses:
+        - A trade town. A bad season. A worse decision by people who thought walls
+          were enough.
+        - When the thing arrived, the gates held for three days. Then they didn't.
+        - I survived because I was copying maps in a cellar. Shame keeps you alive
+          as often as wisdom.
+    - nodeType: 0
+      text: One more thing. If you speak with me again after you've walked the patrol
+        loop yourself, I'll share what the old maps didn't show.
+      choices: []
+    - nodeType: 0
+      text: For now, keep your head down and your path broken. The ruins are watching,
+        even when the creature isn't.
+      choices: []
+  - stageName: Trusted Ally
+    stageDescription: Elder Mara trusts the player and reveals deeper lore about
+      the ruins.
+    nodes:
+    - nodeType: 0
+      text: There you are. I knew you'd live if you kept listening.
+      choices: []
+    - nodeType: 0
+      text: Sit a moment if you can spare it. At my age, conversations feel like
+        rare weather.
+      choices: []
+    - nodeType: 0
+      text: You've walked the loop now. I can see it in how you stop before open
+        ground.
+      choices: []
+    - nodeType: 1
+      text: 
+      choices:
+      - playerText: I'm ready to learn what the maps hid.
+        npcResponses:
+        - Good. Then listen as if your life still depends on it, because it does.
+        - The patrol isn't random. It follows a path burned into the stone by old
+          ward-markers.
+        - Break enough markers and the loop weakens. I don't know what happens then.
+          Nothing good, likely.
+      - playerText: I came to thank you.
+        npcResponses:
+        - Mara exhales, relief softening her face.
+        - Then thank me by leaving this place alive.
+        - Gratitude is sweet. Survival is sweeter.
+      - playerText: Will you leave with me?
+        npcResponses:
+        - Leave? No. These stones are my ledger now.
+        - 'But I''ll give you what I can: names, routes, and warnings enough to fill
+          a book.'
+    - nodeType: 0
+      text: Long ago, the traders here paid for protection with coin. When coin ran
+        out, they paid with people.
+      choices: []
+    - nodeType: 0
+      text: The thing outside isn't a punishment from the sky. It's what was bought
+        and never un-bought.
+      choices: []
+    - nodeType: 0
+      text: That doesn't make it fair. It makes it old. Old dangers are the hardest
+        to kill.
+      choices: []
+    - nodeType: 1
+      text: 
+      choices:
+      - playerText: Is there a way to stop it permanently?
+        npcResponses:
+        - Permanently? I wouldn't promise that to a saint.
+        - But there are stories of a sealed gate beneath the chapel cut.
+        - If such a gate exists, it would need a key, a sacrifice, or a fool. Often
+          all three.
+      - playerText: What should I do next?
+        npcResponses:
+        - Map what you've seen. Mark where sight breaks. Mark where sound carries.
+        - Then decide whether you're here to escape, to explore, or to fix what broke.
+        - Each of those paths kills different kinds of people.
+      - playerText: Tell me about the people who lived here.
+        npcResponses:
+        - There was a baker who whistled. A boy who collected bell fragments.
+        - A guard captain who locked the wrong gate because panic makes fools of
+          the brave.
+        - I remember them because someone must. Memory is the last kindness we can
+          offer.
+    - nodeType: 0
+      text: You've earned more than warnings now. You've earned honesty.
+      choices: []
+    - nodeType: 0
+      text: If the patrol ever stops returning home, don't celebrate. Something worse
+        may have woken.
+      choices: []
+    - nodeType: 0
+      text: Come back when you can. I'll be here with names, maps, and whatever wisdom
+        age hasn't stolen yet.
+      choices: []
+    - nodeType: 0
+      text: 'Until then, traveler: break line of sight, break pride, and break only
+        when you must.'
+      choices: []
