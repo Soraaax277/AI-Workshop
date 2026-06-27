@@ -36,10 +36,3 @@ public class DialogueStage
     public string stageDescription;
     public DialogueNode[] nodes;
 }
-
-[CreateAssetMenu(fileName = "NewDialogue", menuName = "Game/Dialogue Asset")]
-public class DialogueAsset : ScriptableObject
-{
-    public string npcDisplayName = "Villager";
-    public DialogueStage[] stages;
-}

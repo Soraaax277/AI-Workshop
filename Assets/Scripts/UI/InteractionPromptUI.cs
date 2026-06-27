@@ -96,18 +96,10 @@ public class InteractionPromptUI : MonoBehaviour
 
     void EnsureUI()
     {
+        EnsureCanvas();
+
         if (promptText != null)
             return;
-
-        canvas = gameObject.GetComponent<Canvas>();
-        if (canvas == null)
-        {
-            canvas = gameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 50;
-            gameObject.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            gameObject.AddComponent<GraphicRaycaster>();
-        }
 
         var textObject = new GameObject("PromptText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
         textObject.transform.SetParent(transform, false);
@@ -124,5 +116,10 @@ public class InteractionPromptUI : MonoBehaviour
         promptText.fontSize = 18;
         promptText.alignment = TextAnchor.MiddleCenter;
         promptText.color = Color.white;
+    }
+
+    void EnsureCanvas()
+    {
+        canvas = UGUISetup.EnsureOverlayCanvas(gameObject, 50);
     }
 }

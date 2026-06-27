@@ -55,6 +55,7 @@ public class DialogueUI : MonoBehaviour
         continueHintText.gameObject.SetActive(true);
         continueHintText.text = "Click a choice below";
 
+        UnlockChoices();
         EnsureChoiceButtons(choices.Length);
 
         for (int i = 0; i < choices.Length; i++)
@@ -81,9 +82,29 @@ public class DialogueUI : MonoBehaviour
     public void Hide()
     {
         HideChoiceButtons();
+        UnlockChoices();
 
         if (panel != null)
             panel.SetActive(false);
+    }
+
+    public void LockChoices()
+    {
+        SetChoiceButtonsInteractable(false);
+    }
+
+    public void UnlockChoices()
+    {
+        SetChoiceButtonsInteractable(true);
+    }
+
+    void SetChoiceButtonsInteractable(bool interactable)
+    {
+        for (int i = 0; i < choiceButtons.Count; i++)
+        {
+            if (choiceButtons[i] != null)
+                choiceButtons[i].interactable = interactable;
+        }
     }
 
     void HideChoiceButtons()
@@ -108,18 +129,10 @@ public class DialogueUI : MonoBehaviour
 
     void EnsureUI()
     {
+        EnsureCanvas();
+
         if (panel != null && speakerText != null && lineText != null && choicesContainer != null)
             return;
-
-        canvas = gameObject.GetComponent<Canvas>();
-        if (canvas == null)
-        {
-            canvas = gameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 100;
-            gameObject.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            gameObject.AddComponent<GraphicRaycaster>();
-        }
 
         panel = CreatePanel("DialoguePanel", transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(920f, 320f), new Vector2(0f, 36f));
         var panelImage = panel.GetComponent<Image>();
@@ -145,6 +158,11 @@ public class DialogueUI : MonoBehaviour
         layout.childForceExpandWidth = true;
 
         EnsureEventSystem();
+    }
+
+    void EnsureCanvas()
+    {
+        canvas = UGUISetup.EnsureOverlayCanvas(gameObject, 100);
     }
 
     static void EnsureEventSystem()

@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class NPCDialogue : MonoBehaviour, IInteractable
 {
+    const string DefaultDialogueResourcePath = "Dialogue/ElderMaraDialogue";
+
     [Header("Identity")]
     [SerializeField] string npcName = "Villager";
 
@@ -16,6 +18,53 @@ public class NPCDialogue : MonoBehaviour, IInteractable
     bool isTalking;
 
     public int ConversationCount => conversationCount;
+
+    void Awake()
+    {
+        EnsureDialogueAsset();
+        EnsureInteractionCollider();
+    }
+
+    void EnsureDialogueAsset()
+    {
+        if (StageHasContent(GetCurrentStage()))
+            return;
+
+        var loaded = Resources.Load<DialogueAsset>(DefaultDialogueResourcePath);
+        if (loaded != null)
+        {
+            dialogueAsset = loaded;
+            npcName = loaded.npcDisplayName;
+            return;
+        }
+
+        var assets = Resources.FindObjectsOfTypeAll<DialogueAsset>();
+        for (int i = 0; i < assets.Length; i++)
+        {
+            if (assets[i] == null || assets[i].stages == null || assets[i].stages.Length == 0)
+                continue;
+
+            if (assets[i].name.Contains("ElderMara") || assets[i].npcDisplayName == "Elder Mara")
+            {
+                dialogueAsset = assets[i];
+                npcName = assets[i].npcDisplayName;
+                return;
+            }
+        }
+
+        Debug.LogWarning($"NPCDialogue on {name} has no dialogue asset assigned.", this);
+    }
+
+    void EnsureInteractionCollider()
+    {
+        if (GetComponentsInChildren<Collider>().Length > 0)
+            return;
+
+        var collider = gameObject.AddComponent<CapsuleCollider>();
+        collider.height = 2f;
+        collider.center = new Vector3(0f, 1f, 0f);
+        collider.radius = 0.5f;
+    }
 
     public string GetInteractionPrompt()
     {
@@ -35,6 +84,7 @@ public class NPCDialogue : MonoBehaviour, IInteractable
     public void Interact(GameObject interactor)
     {
         RecoverFromStuckState();
+        EnsureDialogueAsset();
 
         if (isTalking)
             return;

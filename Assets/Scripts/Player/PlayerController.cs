@@ -122,6 +122,7 @@ public class PlayerController : MonoBehaviour
 
         if (enabled)
         {
+            jumpAction?.Reset();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }

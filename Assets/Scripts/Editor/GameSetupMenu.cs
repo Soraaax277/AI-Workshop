@@ -7,6 +7,18 @@ using UnityEngine.EventSystems;
 public static class GameSetupMenu
 {
     const string InputActionsPath = "Assets/InputSystem_Actions.inputactions";
+    const string ElderMaraDialoguePath = "Assets/Resources/Dialogue/ElderMaraDialogue.asset";
+
+    [InitializeOnLoadMethod]
+    static void EnsureElderMaraDialogueAssetOnLoad()
+    {
+        EditorApplication.delayCall += () =>
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<DialogueAsset>(ElderMaraDialoguePath);
+            if (asset == null || asset.stages == null || asset.stages.Length == 0)
+                CreateSampleDialogueAsset();
+        };
+    }
 
     [MenuItem("Game/Setup Demo Scene")]
     static void SetupDemoScene()
@@ -45,22 +57,56 @@ public static class GameSetupMenu
         Debug.Log("Cover wall created. Hide behind it to break enemy line of sight.");
     }
 
+    [MenuItem("Game/Fix NPC Interaction")]
+    static void FixNpcInteraction()
+    {
+        if (!System.IO.File.Exists(ElderMaraDialoguePath))
+            CreateSampleDialogueAsset();
+
+        var dialogueAsset = AssetDatabase.LoadAssetAtPath<DialogueAsset>(ElderMaraDialoguePath);
+        var npc = GameObject.Find("NPC_ElderMara");
+        if (npc == null)
+        {
+            CreateNpc();
+            Debug.Log("Created NPC_ElderMara with interaction zone and dialogue.");
+            return;
+        }
+
+        ConfigureNpc(npc, dialogueAsset);
+        EditorUtility.SetDirty(npc);
+        Debug.Log("Updated NPC_ElderMara interaction collider and dialogue reference.");
+    }
+
+    [MenuItem("Game/Fix Elder Mara Dialogue Asset")]
+    static void FixElderMaraDialogueAsset()
+    {
+        var asset = AssetDatabase.LoadAssetAtPath<DialogueAsset>(ElderMaraDialoguePath);
+        if (asset == null || asset.stages == null || asset.stages.Length == 0)
+        {
+            CreateSampleDialogueAsset();
+            return;
+        }
+
+        EditorUtility.SetDirty(asset);
+        AssetDatabase.SaveAssets();
+        Debug.Log("Elder Mara dialogue asset is valid and ready to use.");
+    }
+
     [MenuItem("Game/Create Sample NPC Dialogue Asset")]
     static void CreateSampleDialogueAsset()
     {
-        const string path = "Assets/Data/Dialogue/ElderMaraDialogue.asset";
-        System.IO.Directory.CreateDirectory("Assets/Data/Dialogue");
+        System.IO.Directory.CreateDirectory("Assets/Resources/Dialogue");
 
         var asset = ElderMaraDialogueBuilder.CreateAsset();
-        var existing = AssetDatabase.LoadAssetAtPath<DialogueAsset>(path);
+        var existing = AssetDatabase.LoadAssetAtPath<DialogueAsset>(ElderMaraDialoguePath);
         if (existing != null)
-            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.DeleteAsset(ElderMaraDialoguePath);
 
-        AssetDatabase.CreateAsset(asset, path);
+        AssetDatabase.CreateAsset(asset, ElderMaraDialoguePath);
         AssetDatabase.SaveAssets();
         EditorUtility.FocusProjectWindow();
         Selection.activeObject = asset;
-        Debug.Log($"Created expanded branching dialogue asset at {path}");
+        Debug.Log($"Created expanded branching dialogue asset at {ElderMaraDialoguePath}");
     }
 
     static void EnsureTags()
@@ -257,21 +303,15 @@ public static class GameSetupMenu
 
     static void CreateNpc()
     {
-        const string dialoguePath = "Assets/Data/Dialogue/ElderMaraDialogue.asset";
-        if (!System.IO.File.Exists(dialoguePath))
+        if (!System.IO.File.Exists(ElderMaraDialoguePath))
             CreateSampleDialogueAsset();
 
-        var dialogueAsset = AssetDatabase.LoadAssetAtPath<DialogueAsset>(dialoguePath);
+        var dialogueAsset = AssetDatabase.LoadAssetAtPath<DialogueAsset>(ElderMaraDialoguePath);
         var existingNpc = GameObject.Find("NPC_ElderMara");
 
         if (existingNpc != null)
         {
-            var existingDialogue = existingNpc.GetComponent<NPCDialogue>();
-            if (existingDialogue == null)
-                existingDialogue = existingNpc.AddComponent<NPCDialogue>();
-
-            SetPrivateField(existingDialogue, "npcName", "Elder Mara");
-            SetPrivateField(existingDialogue, "dialogueAsset", dialogueAsset);
+            ConfigureNpc(existingNpc, dialogueAsset);
             return;
         }
 
@@ -281,12 +321,40 @@ public static class GameSetupMenu
         npc.transform.position = new Vector3(-3f, 1f, 2f);
 
         Object.DestroyImmediate(npc.GetComponent<CapsuleCollider>());
-        var collider = npc.AddComponent<CapsuleCollider>();
-        collider.height = 2f;
-        collider.center = new Vector3(0f, 1f, 0f);
-        collider.isTrigger = false;
+        ConfigureNpc(npc, dialogueAsset);
+    }
 
-        var dialogue = npc.AddComponent<NPCDialogue>();
+    static void ConfigureNpc(GameObject npc, DialogueAsset dialogueAsset)
+    {
+        var bodyCollider = npc.GetComponent<CapsuleCollider>();
+        if (bodyCollider == null)
+            bodyCollider = npc.AddComponent<CapsuleCollider>();
+
+        bodyCollider.height = 2f;
+        bodyCollider.center = new Vector3(0f, 1f, 0f);
+        bodyCollider.radius = 0.5f;
+        bodyCollider.isTrigger = false;
+
+        var interactionZone = npc.transform.Find("InteractionZone");
+        if (interactionZone == null)
+        {
+            var zoneObject = new GameObject("InteractionZone");
+            zoneObject.transform.SetParent(npc.transform, false);
+            zoneObject.transform.localPosition = new Vector3(0f, 1f, 0f);
+            interactionZone = zoneObject.transform;
+        }
+
+        var trigger = interactionZone.GetComponent<SphereCollider>();
+        if (trigger == null)
+            trigger = interactionZone.gameObject.AddComponent<SphereCollider>();
+
+        trigger.isTrigger = true;
+        trigger.radius = 1.75f;
+
+        var dialogue = npc.GetComponent<NPCDialogue>();
+        if (dialogue == null)
+            dialogue = npc.AddComponent<NPCDialogue>();
+
         SetPrivateField(dialogue, "npcName", "Elder Mara");
         SetPrivateField(dialogue, "dialogueAsset", dialogueAsset);
     }

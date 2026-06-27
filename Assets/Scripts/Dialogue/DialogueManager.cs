@@ -28,6 +28,8 @@ public class DialogueManager : MonoBehaviour
     string[] activeResponseLines;
     DialogueMode mode;
     bool isPlaying;
+    bool canAcceptAdvance;
+    bool choiceLocked;
     Action onDialogueComplete;
 
     public bool IsPlaying => isPlaying;
@@ -120,8 +122,14 @@ public class DialogueManager : MonoBehaviour
         if (mode == DialogueMode.WaitingForChoice)
             return;
 
+        if (!canAcceptAdvance)
+            return;
+
         if (WasAdvancePressed())
+        {
+            canAcceptAdvance = false;
             Advance();
+        }
     }
 
     bool WasAdvancePressed()
@@ -165,6 +173,8 @@ public class DialogueManager : MonoBehaviour
         activeResponseLines = null;
         onDialogueComplete = onComplete;
         isPlaying = true;
+        canAcceptAdvance = false;
+        choiceLocked = false;
 
         SetPlayerControl(false);
         ShowCurrentNode();
@@ -191,22 +201,27 @@ public class DialogueManager : MonoBehaviour
             }
 
             mode = DialogueMode.WaitingForChoice;
+            choiceLocked = false;
             dialogueUI.ShowChoices(activeSpeakerName, node.choices);
             return;
         }
 
         mode = DialogueMode.NpcLine;
         dialogueUI.ShowNpcLine(activeSpeakerName, node.text);
+        canAcceptAdvance = true;
     }
 
     void HandleChoiceSelected(int choiceIndex)
     {
-        if (!isPlaying || mode != DialogueMode.WaitingForChoice || activeStage == null)
+        if (!isPlaying || mode != DialogueMode.WaitingForChoice || activeStage == null || choiceLocked)
             return;
 
         DialogueNode node = activeStage.nodes[nodeIndex];
         if (node.choices == null || choiceIndex < 0 || choiceIndex >= node.choices.Length)
             return;
+
+        choiceLocked = true;
+        dialogueUI.LockChoices();
 
         DialogueChoice choice = node.choices[choiceIndex];
         activeResponseLines = choice.npcResponses;
@@ -222,6 +237,7 @@ public class DialogueManager : MonoBehaviour
         mode = DialogueMode.ChoiceResponse;
         responseLineIndex = 0;
         dialogueUI.ShowPlayerLine(choice.playerText);
+        canAcceptAdvance = true;
     }
 
     public void Advance()
@@ -249,6 +265,7 @@ public class DialogueManager : MonoBehaviour
 
             dialogueUI.ShowNpcLine(activeSpeakerName, activeResponseLines[responseLineIndex]);
             responseLineIndex++;
+            canAcceptAdvance = true;
         }
     }
 
@@ -258,15 +275,26 @@ public class DialogueManager : MonoBehaviour
             return;
 
         isPlaying = false;
+        canAcceptAdvance = false;
+        choiceLocked = false;
         activeStage = null;
         activeResponseLines = null;
         dialogueUI.Hide();
+        ConsumeAdvanceInputs();
         SetPlayerControl(true);
 
         var callback = onDialogueComplete;
         onDialogueComplete = null;
         callback?.Invoke();
         OnDialogueEnded?.Invoke();
+    }
+
+    void ConsumeAdvanceInputs()
+    {
+        jumpAction?.Reset();
+        attackAction?.Reset();
+        submitAction?.Reset();
+        clickAction?.Reset();
     }
 
     void SetPlayerControl(bool enabled)
